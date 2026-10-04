@@ -53,7 +53,7 @@ const useNotifications = () => {
     const socket = getSocket();
 
     // Register user for notifications
-    socket.emit("registerUser", { userId: user._id });
+    socket.emit("registerUser");
 
     // --- NEW MATCH ---
     const handleMatch = ({ matchedUser }) => {

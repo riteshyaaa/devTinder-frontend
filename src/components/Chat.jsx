@@ -83,11 +83,11 @@ const Chat = () => {
     const socket = getSocket();
     socketRef.current = socket;
 
-    socket.emit("joinChat", { firstName: user?.firstName, userId, targetId });
+    socket.emit("joinChat", { targetId });
 
     // New messages
-    socket.on("messageReceived", ({ firstName, lastName, text, senderId, time, imageUrl, fileUrl, fileName }) => {
-      const msgId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    socket.on("messageReceived", ({ messageId, firstName, lastName, text, senderId, time, imageUrl, fileUrl, fileName }) => {
+      const msgId = messageId || String(Date.now()) + "-" + Math.random().toString(36).slice(2);
       setMessages((prev) => [
         ...prev,
         {
@@ -104,7 +104,7 @@ const Chat = () => {
           fileName: fileName || null,
         },
       ]);
-      socket.emit("messageRead", { userId, targetId });
+      socket.emit("messageRead", { targetId });
     });
 
     // Typing
@@ -139,16 +139,11 @@ const Chat = () => {
     });
 
     // Emoji reactions from other user
-    socket.on("reactionReceived", ({ messageId, emoji, fromUserId }) => {
+    socket.on("reactionReceived", ({ messageId, reactions }) => {
       setMessages((prev) =>
-        prev.map((msg) => {
-          if (msg.id === messageId) {
-            const reactions = { ...msg.reactions };
-            reactions[emoji] = [...(reactions[emoji] || []), fromUserId];
-            return { ...msg, reactions };
-          }
-          return msg;
-        })
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, reactions: reactions || {} } : msg
+        )
       );
     });
 
@@ -161,7 +156,7 @@ const Chat = () => {
       socket.off("onlineStatus");
       socket.off("messagesRead");
       socket.off("reactionReceived");
-      socket.emit("leaveChat", { userId, targetId });
+      socket.emit("leaveChat", { targetId });
     };
   }, [userId, targetId]);
 
@@ -169,12 +164,12 @@ const Chat = () => {
   const handleTyping = useCallback(() => {
     const socket = socketRef.current;
     if (!socket) return;
-    socket.emit("typing", { userId, targetId, firstName: user?.firstName });
+    socket.emit("typing", { targetId });
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
-      socket.emit("stopTyping", { userId, targetId });
+      socket.emit("stopTyping", { targetId });
     }, 2000);
-  }, [userId, targetId, user?.firstName]);
+  }, [targetId]);
 
   // Send message
   const sendMessage = () => {
@@ -183,12 +178,11 @@ const Chat = () => {
     if (!socket) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    socket.emit("stopTyping", { userId, targetId });
+    socket.emit("stopTyping", { targetId });
 
     socket.emit("sendMessage", {
       firstName: user?.firstName,
       lastName: user?.lastName,
-      userId,
       targetId,
       text: newMessage,
       imageUrl: imagePreview || null,
@@ -206,7 +200,6 @@ const Chat = () => {
       socket.emit("addReaction", {
         messageId: msg.id,
         emoji,
-        userId,
         targetId,
       });
     }
@@ -249,7 +242,6 @@ const Chat = () => {
         socket.emit("sendMessage", {
           firstName: user?.firstName,
           lastName: user?.lastName,
-          userId,
           targetId,
           text: `📎 Shared file: ${file.name}`,
           fileName: file.name,

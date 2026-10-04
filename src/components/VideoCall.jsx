@@ -165,7 +165,6 @@ const VideoCall = ({ userId, targetId, targetName, onClose }) => {
       // Signal the target user via socket
       const socket = getSocket();
       socket.emit("startCall", {
-        fromUserId: userId,
         targetId,
         peerId: peerRef.current?.id || userId,
       });
@@ -222,7 +221,7 @@ const VideoCall = ({ userId, targetId, targetName, onClose }) => {
 
     // Notify remote user
     const socket = getSocket();
-    socket.emit("endCall", { fromUserId: userId, targetId });
+    socket.emit("endCall", { targetId });
 
     setCallState("ended");
     setCallDuration(0);
