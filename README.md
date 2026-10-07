@@ -95,74 +95,7 @@ DevTinder frontend is built as a production-grade, SaaS-style single-page applic
 
 ## Design System Tokens
 
-### Color Palette
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| **Brand Dark (Background)** | `#050816` | Page background, deep space |
-| **Brand Surface** | `#0B1020` | Elevated panels, card containers |
-| **Brand Card** | `#111827` | Secondary surfaces, nested cards |
-| **Sub-surface** | `#1E293B` | Tertiary depth, hover states |
-| **Violet (Primary)** | `#7C3AED` | Primary CTA buttons, brand accent |
-| **Light Violet** | `#8B5CF6` | Hover states, active indicators |
-| **Electric Blue** | `#2563EB` | Links, interactive elements |
-| **Sky Cyan** | `#06B6D4` | Accent gradients, highlights |
-| **Success (Emerald)** | `#22C55E` | Success states, match indicators |
-| **Warning (Amber)** | `#F59E0B` | Warning states, challenge badges |
-| **Error (Rose)** | `#EF4444` | Error states, destructive actions |
-| **Info (Sky)** | `#38BDF8` | Informational badges, tooltips |
-
-### Glassmorphism Utilities
-
-```css
-/* Glass panel effect */
-.glass-panel {
-  background: rgba(11, 16, 32, 0.8);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-/* Primary glow effect */
-.glow-primary {
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.6), 0 0 40px rgba(124, 58, 237, 0.3);
-}
-
-/* Cyan glow effect */
-.glow-cyan {
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(6, 182, 212, 0.3);
-}
-
-/* Brand gradient text */
-.brand-gradient-text {
-  background: linear-gradient(135deg, #7C3AED 0%, #06B6D4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Grid pattern background */
-.grid-pattern {
-  background-image: 
-    linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-```
-
-### Typography Hierarchy
-
-| Element | Class | Font Weight | Tracking |
-|---------|-------|-------------|----------|
-| **Hero Heading** | `text-5xl sm:text-6xl` | `font-black` (900) | `tracking-tight` |
-| **Page Heading** | `text-3xl sm:text-4xl` | `font-black` (900) | `tracking-tight` |
-| **Section Heading** | `text-2xl` | `font-bold` (700) | `tracking-tight` |
-| **Card Title** | `text-lg` | `font-bold` (700) | Normal |
-| **Body Text** | `text-sm sm:text-base` | `font-normal` (400) | Normal |
-| **Caption** | `text-xs` | `font-medium` (500) | `tracking-wide` |
-| **Mono Label** | `text-[11px] font-mono` | `font-semibold` (600) | `tracking-wider` |
-
----
 
 ## Environment Variables
 
@@ -319,103 +252,6 @@ devTinder-frontend/
 └── vite.config.js                  # Vite configuration
 ```
 
----
-
-## Production Build
-
-To create an optimized production build:
-
-```bash
-npm run build
-```
-
-This will:
-- Compile and bundle all React components
-- Tree-shake unused code
-- Minify JavaScript and CSS
-- Generate a `dist/` folder ready for deployment
-
-**Deployment Targets:**
-- **Static Hosting**: Vercel, Netlify, Cloudflare Pages, AWS S3 + CloudFront
-- **Server-Side**: Serve `dist/` via Nginx, Apache, or Node.js static server
-
-**Build Verification Checklist:**
-- ✅ Zero Vite compilation errors
-- ✅ No console warnings in production build
-- ✅ All environment variables prefixed with `VITE_`
-- ✅ Correct `VITE_API_URL` pointing to production backend
-- ✅ All assets (favicon, logo) correctly referenced
-- ✅ Service worker (if applicable) registered and functioning
-
----
-
-## Browser Support
-
-| Browser | Minimum Version | Notes |
-|---------|----------------|-------|
-| Chrome | 90+ | Fully supported |
-| Firefox | 88+ | Fully supported |
-| Safari | 14+ | Fully supported |
-| Edge | 90+ | Fully supported |
-| Opera | 76+ | Fully supported |
-
-**WebRTC Requirements:**
-- Secure context (HTTPS) required for getUserMedia (camera/mic access)
-- Peer-to-peer calling may require STUN/TURN servers for NAT traversal (PeerJS default: `0.peerjs.com`)
-
----
-
-## Design Principles
-
-1. **Glassmorphism First**: Frosted glass panels (`backdrop-blur-xl`), subtle borders (`border-white/10`), layered depth.
-2. **Dark Mode Native**: Default dark theme with 24 DaisyUI theme alternatives.
-3. **Radiant Gradients**: Violet-to-cyan, amber-to-orange, emerald-to-teal for CTAs, badges, and accents.
-4. **SVG Icons Over Emoji**: Scalable Heroicons v2 for professional, consistent iconography.
-5. **Honest UI**: Demo/sample data explicitly labeled (e.g., "Demo Analytics Preview" badge).
-6. **Shimmer Skeletons**: Gradient shimmer animations during loading states.
-7. **Keyboard & Accessibility**: ARIA labels, semantic HTML, keyboard navigation support.
-
----
-
-## Known Limitations & Future Enhancements
-
-### Current Limitations
-- **Profile Analytics**: Backend analytics endpoints not yet implemented; frontend displays demo data with explicit labeling.
-- **GitHub Integration**: Planned feature; component scaffolding exists but not connected to backend.
-- **Coding Challenges**: Backend challenge submission and leaderboard APIs are placeholders.
-- **Activity Feed**: Backend activity feed endpoints return mock data or 404.
-
-### Planned Enhancements
-- [ ] Implement live profile analytics with backend integration
-- [ ] GitHub OAuth flow and repository showcase
-- [ ] Real-time collaborative code editor for pair programming
-- [ ] Advanced feed filtering (location, availability, project type)
-- [ ] Progressive Web App (PWA) with offline support
-- [ ] End-to-end tests (Playwright / Cypress)
-- [ ] Accessibility audit and WCAG 2.1 AA compliance
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-**Problem**: `npm run dev` fails with `EADDRINUSE` error.
-- **Solution**: Another process is using port 5173. Kill the process or change the port in `vite.config.js`.
-
-**Problem**: API calls return 404 or CORS errors.
-- **Solution**: Verify `VITE_API_URL` in `.env` matches the running backend URL. Ensure backend CORS allows `http://localhost:5173`.
-
-**Problem**: Socket.IO connection fails (chat/notifications not working).
-- **Solution**: Check backend Socket.IO server is running and accessible. Verify `socketService.js` connects to correct URL.
-
-**Problem**: Video calling doesn't work.
-- **Solution**: Ensure HTTPS (or localhost). Check browser permissions for camera/mic. Verify PeerJS server is reachable.
-
-**Problem**: Cloudinary image uploads fail.
-- **Solution**: Verify `VITE_CLOUDINARY_CLOUD_NAME` and `VITE_CLOUDINARY_UPLOAD_PRESET` are correct. Ensure upload preset is **unsigned**.
-
----
 
 ## Contributing
 
@@ -439,8 +275,7 @@ This project is licensed under the **MIT License**. See `LICENSE` file for detai
 
 - **Issues**: Report bugs or request features via GitHub Issues
 - **Discussions**: Join community discussions for Q&A and feature ideas
-- **Email**: support@devtinder.dev (placeholder)
 
 ---
 
-**Built with ❤️ by developers, for developers.**
+**Built with ❤️ by Ritesh Yadav, for developers.**
