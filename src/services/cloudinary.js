@@ -14,10 +14,13 @@
  * - Max file size validation (5MB)
  */
 
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "demo";
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "ml_default";
-const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+export const isCloudinaryConfigured = () => {
+  return Boolean(CLOUD_NAME && UPLOAD_PRESET && CLOUD_NAME !== "demo");
+};
 
 /**
  * Upload an image file to Cloudinary.
@@ -34,16 +37,20 @@ export const uploadImage = async (file, options = {}) => {
   if (!file.type.startsWith("image/")) throw new Error("File must be an image");
   if (file.size > MAX_FILE_SIZE) throw new Error("Image must be smaller than 5MB");
 
+  const cloudName = CLOUD_NAME || "demo";
+  const uploadPreset = UPLOAD_PRESET || "ml_default";
+  const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", UPLOAD_PRESET);
+  formData.append("upload_preset", uploadPreset);
   formData.append("folder", folder);
 
   // Use XMLHttpRequest for progress tracking
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
 
-    xhr.open("POST", UPLOAD_URL);
+    xhr.open("POST", uploadUrl);
 
     // Progress handler
     if (onProgress) {
@@ -67,12 +74,18 @@ export const uploadImage = async (file, options = {}) => {
           bytes: data.bytes,
         });
       } else {
-        const error = JSON.parse(xhr.responseText);
-        reject(new Error(error.error?.message || "Upload failed"));
+        let errorMsg = "Image upload failed";
+        try {
+          const error = JSON.parse(xhr.responseText);
+          errorMsg = error.error?.message || errorMsg;
+        } catch {
+          // ignore json parse error
+        }
+        reject(new Error(errorMsg));
       }
     };
 
-    xhr.onerror = () => reject(new Error("Network error during upload"));
+    xhr.onerror = () => reject(new Error("Network error during image upload. Check internet connection."));
     xhr.send(formData);
   });
 };
