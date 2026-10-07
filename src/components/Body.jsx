@@ -1,35 +1,51 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "./Footer";
 import NavBar from "./NavBar";
-import LandingPage from "./LandingPage";
 import ToastNotifications from "./ToastNotifications";
+import IncomingCallBanner from "./IncomingCallBanner";
+import VideoCall from "./VideoCall";
 import useAuth from "../hooks/useAuth";
 import useNotifications from "../hooks/useNotifications";
-import { Spinner } from "./Shimmer";
+import { getSocket } from "../utils/socket";
 
 /**
- * Body — Main app layout with animated page transitions.
+ * Body — Main app layout with animated page transitions and global notification/call layer.
  */
 const Body = () => {
-  const { user, loading, fetchUser } = useAuth();
-  const { toasts, dismissToast } = useNotifications();
+  const { user } = useAuth();
+  const { toasts, dismissToast, incomingCall, dismissIncomingCall } =
+    useNotifications();
+  const [activeVideoCall, setActiveVideoCall] = useState(null);
   const location = useLocation();
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  const handleAcceptIncomingCall = () => {
+    if (!incomingCall) return;
+    const { fromUserId, fromUser, callId } = incomingCall;
+    const targetName = fromUser?.firstName
+      ? `${fromUser.firstName} ${fromUser.lastName || ""}`.trim()
+      : "Developer";
 
-  // Show loading spinner during initial auth check
-  if (loading && !user) {
-    return <Spinner text="Loading DevTinder..." />;
-  }
+    setActiveVideoCall({
+      targetId: fromUserId,
+      targetName,
+      isInitiator: false,
+      callId,
+    });
+    dismissIncomingCall();
+  };
 
-  // Show landing page for logged-out users (except on /login route)
-  if (!user && !location.pathname.includes("login")) {
-    return <LandingPage />;
-  }
+  const handleDeclineIncomingCall = () => {
+    if (!incomingCall) return;
+    try {
+      const socket = getSocket();
+      socket.emit("endCall", { targetId: incomingCall.fromUserId });
+    } catch (err) {
+      console.warn("Decline call error:", err);
+    }
+    dismissIncomingCall();
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -50,8 +66,27 @@ const Body = () => {
       </main>
       <Footer />
 
-      {/* Real-time Toast Notifications */}
+      {/* Global Real-time Toast Notifications */}
       <ToastNotifications toasts={toasts} onDismiss={dismissToast} />
+
+      {/* Global Incoming Video Call Banner */}
+      <IncomingCallBanner
+        incomingCall={incomingCall}
+        onAccept={handleAcceptIncomingCall}
+        onDecline={handleDeclineIncomingCall}
+      />
+
+      {/* Global Active Video Call Modal */}
+      {activeVideoCall && user?._id && (
+        <VideoCall
+          userId={user._id}
+          targetId={activeVideoCall.targetId}
+          targetName={activeVideoCall.targetName}
+          isInitiator={activeVideoCall.isInitiator}
+          initialCallId={activeVideoCall.callId}
+          onClose={() => setActiveVideoCall(null)}
+        />
+      )}
     </div>
   );
 };

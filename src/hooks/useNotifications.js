@@ -10,7 +10,7 @@ import {
 
 /**
  * useNotifications — connects to Socket.IO and listens for real-time events.
- * Dispatches notifications to Redux store and manages toast display queue.
+ * Dispatches notifications to Redux store and manages toast display queue + global incoming video calls.
  *
  * Socket events handled:
  * - newMatch: Mutual interest detected
@@ -18,14 +18,17 @@ import {
  * - newMessageNotification: Chat message when user is NOT in that chat
  * - someoneInterested: Someone swiped right on you
  * - systemNotification: Platform announcements
+ * - incomingCall: Peer-to-peer video call request
+ * - callEnded: Video call terminated by remote peer
  *
- * Returns: { toasts, dismissToast }
+ * Returns: { toasts, dismissToast, incomingCall, setIncomingCall, dismissIncomingCall }
  */
 const useNotifications = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const location = useLocation();
   const [toasts, setToasts] = useState([]);
+  const [incomingCall, setIncomingCall] = useState(null);
 
   // Track which chat is currently open to suppress redundant notifications
   const currentChatId = location.pathname.startsWith("/chat/")
@@ -45,6 +48,10 @@ const useNotifications = () => {
 
   const dismissToast = useCallback((id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const dismissIncomingCall = useCallback(() => {
+    setIncomingCall(null);
   }, []);
 
   useEffect(() => {
@@ -143,11 +150,25 @@ const useNotifications = () => {
       showToast({ type: "system", title, message });
     };
 
+    // --- INCOMING CALL ---
+    const handleIncomingCall = (callData) => {
+      if (callData?.fromUserId) {
+        setIncomingCall(callData);
+      }
+    };
+
+    // --- CALL ENDED / CANCELLED ---
+    const handleCallEnded = ({ fromUserId }) => {
+      setIncomingCall((prev) => (prev?.fromUserId === fromUserId ? null : prev));
+    };
+
     socket.on("newMatch", handleMatch);
     socket.on("newRequest", handleRequest);
     socket.on("newMessageNotification", handleMessage);
     socket.on("someoneInterested", handleInterest);
     socket.on("systemNotification", handleSystem);
+    socket.on("incomingCall", handleIncomingCall);
+    socket.on("callEnded", handleCallEnded);
 
     return () => {
       socket.off("newMatch", handleMatch);
@@ -155,6 +176,8 @@ const useNotifications = () => {
       socket.off("newMessageNotification", handleMessage);
       socket.off("someoneInterested", handleInterest);
       socket.off("systemNotification", handleSystem);
+      socket.off("incomingCall", handleIncomingCall);
+      socket.off("callEnded", handleCallEnded);
     };
   }, [user?._id, currentChatId, dispatch, showToast]);
 
@@ -165,7 +188,7 @@ const useNotifications = () => {
     }
   }, [currentChatId, dispatch]);
 
-  return { toasts, dismissToast };
+  return { toasts, dismissToast, incomingCall, setIncomingCall, dismissIncomingCall };
 };
 
 export default useNotifications;
