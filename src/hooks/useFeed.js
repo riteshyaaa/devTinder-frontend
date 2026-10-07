@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed, removeUserFromFeed } from "../utils/feedSlice";
 import {
@@ -151,38 +151,39 @@ const useFeed = () => {
       setBoostEndTime(endTime);
       localStorage.setItem("devtinder-boost-end", endTime.toString());
 
-      // Auto-deactivate after 30 min
-      setTimeout(() => {
-        setBoostActive(false);
-        setBoostEndTime(null);
-        localStorage.removeItem("devtinder-boost-end");
-      }, 30 * 60 * 1000);
-
       return { success: true };
     } catch (err) {
       return { success: false, error: getErrorMessage(err) };
     }
   }, []);
 
-  // Check for existing boost on mount
-  useState(() => {
+  // Check and manage existing boost timer on mount and when boostEndTime changes
+  useEffect(() => {
     const stored = localStorage.getItem("devtinder-boost-end");
+    let timerId = null;
+
     if (stored) {
       const endTime = parseInt(stored, 10);
       if (endTime > Date.now()) {
         setBoostActive(true);
         setBoostEndTime(endTime);
         const remaining = endTime - Date.now();
-        setTimeout(() => {
+        timerId = setTimeout(() => {
           setBoostActive(false);
           setBoostEndTime(null);
           localStorage.removeItem("devtinder-boost-end");
         }, remaining);
       } else {
+        setBoostActive(false);
+        setBoostEndTime(null);
         localStorage.removeItem("devtinder-boost-end");
       }
     }
-  });
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [boostEndTime]);
 
   /**
    * Undo — reverts the most recent ignored swipe (up to last 3).
