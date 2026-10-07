@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AuthInitializer from "./components/AuthInitializer";
 import { Spinner } from "./components/Shimmer";
 
 // Lazy-loaded components for code splitting
@@ -25,27 +27,102 @@ function App() {
     <ErrorBoundary>
       <Provider store={appStore}>
         <BrowserRouter basename="/">
-          <Suspense fallback={<Spinner text="Loading..." />}>
-            <Routes>
-              {/* Standalone pages (no NavBar/Footer) */}
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/welcome" element={<LandingPage />} />
+          <AuthInitializer>
+            <Suspense fallback={<Spinner text="Loading..." />}>
+              <Routes>
+                {/* Standalone pages (no NavBar/Footer) */}
+                <Route
+                  path="/onboarding"
+                  element={
+                    <ProtectedRoute>
+                      <Onboarding />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Main app layout */}
-              <Route path="/" element={<Body />}>
-                <Route index element={<Feed />} />
-                <Route path="login" element={<Login />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="connections" element={<Connections />} />
-                <Route path="requests" element={<Requests />} />
-                <Route path="chat/:targetId" element={<Chat />} />
-                <Route path="projects" element={<ProjectBoard />} />
-                <Route path="activity" element={<ActivityFeed />} />
-                <Route path="challenges" element={<CodingChallenges />} />
-                <Route path="analytics" element={<ProfileAnalytics />} />
-              </Route>
-            </Routes>
-          </Suspense>
+                {/* Main app layout */}
+                <Route path="/" element={<Body />}>
+                  {/* Public routes */}
+                  <Route index element={<LandingPage />} />
+                  <Route path="login" element={<Login />} />
+
+                  {/* Protected routes (require authentication) */}
+                  <Route
+                    path="feed"
+                    element={
+                      <ProtectedRoute>
+                        <Feed />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="connections"
+                    element={
+                      <ProtectedRoute>
+                        <Connections />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="requests"
+                    element={
+                      <ProtectedRoute>
+                        <Requests />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="chat/:targetId"
+                    element={
+                      <ProtectedRoute>
+                        <Chat />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="projects"
+                    element={
+                      <ProtectedRoute>
+                        <ProjectBoard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="activity"
+                    element={
+                      <ProtectedRoute>
+                        <ActivityFeed />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="challenges"
+                    element={
+                      <ProtectedRoute>
+                        <CodingChallenges />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="analytics"
+                    element={
+                      <ProtectedRoute>
+                        <ProfileAnalytics />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
+              </Routes>
+            </Suspense>
+          </AuthInitializer>
         </BrowserRouter>
       </Provider>
     </ErrorBoundary>
