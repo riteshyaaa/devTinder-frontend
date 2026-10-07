@@ -1,85 +1,142 @@
+import { Link } from "react-router-dom";
+import Logo from "./ui/Logo";
+
 const Footer = () => {
   return (
     <footer
-      className="footer sm:footer-horizontal bg-neutral text-neutral-content items-center p-4"
+      className="bg-brand-darker/90 border-t border-white/10 text-slate-400 text-sm transition-colors"
       role="contentinfo"
       aria-label="Site footer"
     >
-      <aside className="grid-flow-col items-center">
-        <svg
-          width="36"
-          height="36"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          className="fill-current"
-          aria-hidden="true"
-        >
-          <path d="M22.672 15.226l-2.432.811.841 2.515c.33 1.019-.209 2.127-1.23 2.456-1.15.325-2.148-.321-2.463-1.226l-.84-2.518-5.013 1.677.84 2.517c.391 1.203-.434 2.542-1.831 2.542-.88 0-1.601-.564-1.86-1.314l-.842-2.516-2.431.809c-1.135.328-2.145-.317-2.463-1.229-.329-1.018.211-2.127 1.231-2.456l2.432-.809-1.621-4.823-2.432.808c-1.355.384-2.558-.59-2.558-1.839 0-.817.509-1.582 1.327-1.846l2.433-.809-.842-2.515c-.33-1.02.211-2.129 1.232-2.458 1.02-.329 2.13.209 2.461 1.229l.842 2.515 5.011-1.677-.839-2.517c-.403-1.238.484-2.553 1.843-2.553.819 0 1.585.509 1.85 1.326l.841 2.517 2.431-.81c1.02-.33 2.131.211 2.461 1.229.332 1.018-.21 2.126-1.23 2.456l-2.433.809 1.622 4.823 2.433-.809c1.242-.401 2.557.484 2.557 1.838 0 .819-.51 1.583-1.328 1.847m-8.992-6.428l-5.01 1.675 1.619 4.828 5.011-1.674-1.62-4.829z" />
-        </svg>
-        <p>
-          Copyright &copy; {new Date().getFullYear()} DevTinder. All rights
-          reserved.
-        </p>
-      </aside>
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+          {/* Brand Col (2 cols wide on desktop) */}
+          <div className="lg:col-span-2 space-y-4">
+            <Link to="/" className="inline-block">
+              <Logo size="md" />
+            </Link>
+            <p className="text-slate-400 text-sm max-w-sm leading-relaxed">
+              The premier matchmaking and real-time collaboration ecosystem engineered for developers. Discover peers, pair program, and build the future together.
+            </p>
+            <div className="flex items-center gap-3 pt-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                All Systems Operational
+              </div>
+            </div>
+          </div>
 
-      <nav
-        className="grid-flow-col gap-4 md:place-self-center md:justify-self-end"
-        aria-label="Social media links"
-      >
-        <a
-          href="https://twitter.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Follow us on Twitter"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="fill-current"
-            aria-hidden="true"
-          >
-            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-          </svg>
-        </a>
-        <a
-          href="https://youtube.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Subscribe on YouTube"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="fill-current"
-            aria-hidden="true"
-          >
-            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-          </svg>
-        </a>
-        <a
-          href="https://facebook.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Follow us on Facebook"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="fill-current"
-            aria-hidden="true"
-          >
-            <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-          </svg>
-        </a>
-      </nav>
+          {/* Product Links */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Product</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/" className="hover:text-violet-400 transition-colors">
+                  Developer Discovery
+                </Link>
+              </li>
+              <li>
+                <Link to="/connections" className="hover:text-violet-400 transition-colors">
+                  Pair Programming
+                </Link>
+              </li>
+              <li>
+                <Link to="/projects" className="hover:text-violet-400 transition-colors">
+                  Project Board
+                </Link>
+              </li>
+              <li>
+                <Link to="/challenges" className="hover:text-violet-400 transition-colors">
+                  Coding Challenges
+                </Link>
+              </li>
+              <li>
+                <Link to="/analytics" className="hover:text-violet-400 transition-colors">
+                  Profile Analytics
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Platform & Stack */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Ecosystem</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <span className="text-slate-300">React 18 &amp; Vite</span>
+              </li>
+              <li>
+                <span className="text-slate-300">Node &amp; Express API</span>
+              </li>
+              <li>
+                <span className="text-slate-300">Socket.IO Real-time</span>
+              </li>
+              <li>
+                <span className="text-slate-300">PeerJS WebRTC Audio/Video</span>
+              </li>
+              <li>
+                <span className="text-slate-300">MongoDB Database</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Community & Connect */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Connect</h4>
+            <div className="flex gap-3">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-xl bg-white/5 hover:bg-violet-600/20 hover:text-violet-300 text-slate-300 flex items-center justify-center transition-all border border-white/5"
+                aria-label="GitHub repository"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+              </a>
+              <a
+                href="https://discord.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-xl bg-white/5 hover:bg-indigo-600/20 hover:text-indigo-300 text-slate-300 flex items-center justify-center transition-all border border-white/5"
+                aria-label="Discord community"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.894.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+                </svg>
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-xl bg-white/5 hover:bg-cyan-600/20 hover:text-cyan-300 text-slate-300 flex items-center justify-center transition-all border border-white/5"
+                aria-label="Twitter / X profile"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+            </div>
+            <p className="text-xs text-slate-500 pt-1">
+              Built with precision for developers worldwide.
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-slate-500">
+            &copy; {new Date().getFullYear()} DevTinder. Released under the MIT License.
+          </p>
+          <div className="flex items-center gap-6 text-xs text-slate-400">
+            <span className="hover:text-white transition-colors cursor-pointer">Privacy</span>
+            <span className="hover:text-white transition-colors cursor-pointer">Terms</span>
+            <span className="hover:text-white transition-colors cursor-pointer">Security</span>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 };

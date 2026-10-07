@@ -1,30 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <link href="/src/index.css" rel="stylesheet">
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#661ae6" />
-    <meta name="description" content="DevTinder - Find your next coding partner. Swipe, match, and collaborate with developers." />
+    <meta name="theme-color" content="#7C3AED" />
+    <meta name="description" content="DevTinder — Discover developers. Build connections. Create together. The matchmaking and real-time collaboration platform engineered for developers." />
 
     <!-- Apple PWA Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="DevTinder" />
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="DevTinder - Find Your Coding Partner" />
-    <meta property="og:description" content="Connect with developers. Swipe, match, collaborate." />
+    <!-- Open Graph / SEO -->
+    <meta property="og:title" content="DevTinder — Developer Networking & Collaboration Platform" />
+    <meta property="og:description" content="Discover developers, swipe on matching skillsets, chat with real-time code highlighting, and launch collaborative projects." />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="/devtinder-logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DevTinder — Developer Networking & Collaboration" />
+    <meta name="twitter:description" content="Discover developers. Build connections. Create together." />
 
-    <title>DevTinder</title>
+    <title>DevTinder — Developer Networking & Collaboration Platform</title>
   </head>
-  <body>
+  <body class="bg-base-100 text-base-content antialiased selection:bg-violet-500/30 selection:text-violet-200 min-h-screen">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
 
@@ -34,10 +37,10 @@
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
-              console.log('SW registered:', registration.scope);
+              // Service Worker registered
             })
-            .catch((error) => {
-              console.log('SW registration failed:', error);
+            .catch(() => {
+              // Silent SW fallback
             });
         });
       }
