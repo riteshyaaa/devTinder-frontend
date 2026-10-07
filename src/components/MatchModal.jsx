@@ -6,46 +6,32 @@ import { Link } from "react-router-dom";
  * MatchModal - "It's a Match!" celebration screen.
  *
  * Features:
- * - 60 animated confetti particles (varied sizes, colors, speeds)
- * - Pulsing glow background + gradient border animation
- * - Both users' photos slide in from sides with ring highlights
- * - Animated pulsing heart between photos
- * - Shared skills display as conversation starter
- * - "Send a Message" → navigates to chat | "Keep Swiping" → dismiss
- * - Escape key closes modal
- * - Mobile haptic feedback (vibration API)
- * - Toast notification trigger for background awareness
- *
- * Props:
- * - show: boolean
- * - matchedUser: { _id, firstName, lastName, photoUrl, skills }
- * - currentUser: { firstName, photoUrl, skills }
- * - onClose: callback
+ * - Animated particle confetti (color palette matching brand tokens)
+ * - Radiant backdrop glow with glass container
+ * - Avatar slide-in animation with ring glows
+ * - Interconnected developer node icon
+ * - Shared skills display as conversational kickstarters
+ * - "Start Conversation" CTA and "Keep Exploring" dismiss
+ * - Escape key support & mobile haptics
  */
 const MatchModal = ({ show, matchedUser, currentUser, onClose }) => {
   const [confetti, setConfetti] = useState([]);
 
-  // Generate diverse confetti on show
   useEffect(() => {
     if (show) {
-      // Trigger haptic feedback on mobile
       if (navigator.vibrate) {
         navigator.vibrate([100, 50, 100, 50, 200]);
       }
 
-      const shapes = ["circle", "square", "triangle"];
-      const particles = Array.from({ length: 60 }, (_, i) => ({
+      const colors = ["#7C3AED", "#06B6D4", "#EC4899", "#10B981", "#8B5CF6", "#38BDF8"];
+      const particles = Array.from({ length: 50 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
-        delay: Math.random() * 0.8,
-        duration: 2.5 + Math.random() * 2.5,
-        color: [
-          "#f472b6", "#a78bfa", "#34d399", "#fbbf24", "#60a5fa",
-          "#fb923c", "#e879f9", "#22d3ee",
-        ][Math.floor(Math.random() * 8)],
-        size: 5 + Math.random() * 10,
-        shape: shapes[Math.floor(Math.random() * 3)],
-        drift: (Math.random() - 0.5) * 80,
+        delay: Math.random() * 0.6,
+        duration: 2.2 + Math.random() * 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: 6 + Math.random() * 8,
+        drift: (Math.random() - 0.5) * 70,
       }));
       setConfetti(particles);
     } else {
@@ -53,7 +39,6 @@ const MatchModal = ({ show, matchedUser, currentUser, onClose }) => {
     }
   }, [show]);
 
-  // Escape key to close
   const handleKeyDown = useCallback(
     (e) => {
       if (e.key === "Escape" && show) {
@@ -68,7 +53,6 @@ const MatchModal = ({ show, matchedUser, currentUser, onClose }) => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (show) {
       document.body.style.overflow = "hidden";
@@ -80,7 +64,6 @@ const MatchModal = ({ show, matchedUser, currentUser, onClose }) => {
     };
   }, [show]);
 
-  // Find shared skills between both users
   const sharedSkills = useMemo(() => {
     if (!matchedUser?.skills || !currentUser?.skills) return [];
     return currentUser.skills.filter((skill) =>
@@ -94,7 +77,7 @@ const MatchModal = ({ show, matchedUser, currentUser, onClose }) => {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -102,34 +85,32 @@ const MatchModal = ({ show, matchedUser, currentUser, onClose }) => {
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/75 backdrop-blur-md"
+            className="absolute inset-0 bg-black/80 backdrop-blur-xl"
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           />
 
-          {/* Confetti Layer */}
+          {/* Confetti Particles */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
             {confetti.map((particle) => (
               <motion.div
                 key={particle.id}
-                className="absolute top-0"
+                className="absolute top-0 rounded-full"
                 style={{
                   left: `${particle.x}%`,
                   width: particle.size,
                   height: particle.size,
                   backgroundColor: particle.color,
-                  borderRadius: particle.shape === "circle" ? "50%" : particle.shape === "triangle" ? "0" : "2px",
-                  clipPath: particle.shape === "triangle" ? "polygon(50% 0%, 0% 100%, 100% 100%)" : undefined,
                 }}
                 initial={{ y: -20, opacity: 1, scale: 1 }}
                 animate={{
                   y: "100vh",
                   x: particle.drift,
                   opacity: 0,
-                  rotate: 720 * (Math.random() > 0.5 ? 1 : -1),
-                  scale: 0.5,
+                  rotate: 540,
+                  scale: 0.4,
                 }}
                 transition={{
                   duration: particle.duration,
@@ -140,160 +121,130 @@ const MatchModal = ({ show, matchedUser, currentUser, onClose }) => {
             ))}
           </div>
 
-          {/* Modal Content */}
+          {/* Modal Container */}
           <motion.div
-            className="relative bg-base-200 rounded-3xl p-8 max-w-sm w-full mx-4 text-center shadow-2xl overflow-hidden"
-            initial={{ scale: 0.3, y: 80, opacity: 0 }}
+            className="relative bg-brand-surface/95 border border-white/10 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl shadow-violet-950/60 overflow-hidden backdrop-blur-2xl"
+            initial={{ scale: 0.85, y: 30, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.7, y: 40, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 350, damping: 22, delay: 0.1 }}
+            exit={{ scale: 0.85, y: 30, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 350, damping: 24 }}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label="It's a Match!"
+            aria-label="Mutual Developer Match!"
           >
-            {/* Animated gradient border glow */}
-            <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 opacity-60 blur-sm animate-pulse pointer-events-none" />
-            <div className="absolute inset-0 rounded-3xl bg-base-200 pointer-events-none" />
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-gradient-to-r from-violet-600/30 via-pink-600/30 to-cyan-500/30 rounded-full blur-[60px] pointer-events-none" />
 
-            {/* Inner glow */}
-            <motion.div
-              className="absolute inset-0 rounded-3xl pointer-events-none"
-              style={{
-                background: "radial-gradient(ellipse at center, rgba(236,72,153,0.1) 0%, transparent 70%)",
-              }}
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-
-            {/* Content (relative to sit above glow layers) */}
             <div className="relative z-10">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-300 text-xs font-mono font-semibold mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
+                Mutual Developer Connection
+              </div>
+
               {/* Title */}
               <motion.h2
-                className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-500 bg-clip-text text-transparent mb-6"
-                initial={{ scale: 0, rotate: -10 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 400, damping: 12, delay: 0.3 }}
+                className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight mb-2"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.15 }}
               >
-                It&apos;s a Match!
+                It&apos;s a{" "}
+                <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-300 bg-clip-text text-transparent">
+                  Pair Match!
+                </span>
               </motion.h2>
 
-              {/* Profile Photos */}
-              <div className="flex justify-center items-center gap-3 mb-5">
-                {/* Current user photo */}
+              <p className="text-xs sm:text-sm text-slate-300 max-w-xs mx-auto mb-6">
+                You and <strong className="text-white">{matchedUser.firstName}</strong> both expressed interest in collaborating.
+              </p>
+
+              {/* Avatars */}
+              <div className="flex justify-center items-center gap-4 mb-6">
                 <motion.div
-                  initial={{ x: -60, opacity: 0, scale: 0.5 }}
-                  animate={{ x: 0, opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, delay: 0.4 }}
+                  initial={{ x: -40, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden ring-2 ring-violet-500/80 shadow-xl shadow-violet-500/20 bg-slate-900"
                 >
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-pink-500 ring-offset-2 ring-offset-base-200 shadow-xl shadow-pink-500/20">
-                    <img
-                      src={currentUser.photoUrl}
-                      alt={`${currentUser.firstName}'s photo`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <img
+                    src={currentUser.photoUrl}
+                    alt={currentUser.firstName}
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
 
-                {/* Pulsing heart */}
+                {/* Connection Node Icon */}
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, delay: 0.6 }}
-                  aria-hidden="true"
+                  transition={{ type: "spring", stiffness: 400, delay: 0.35 }}
+                  className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-violet-600/30 shrink-0"
                 >
-                  <motion.svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-10 w-10 sm:h-12 sm:w-12 text-pink-500 drop-shadow-lg"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 0.5 }}
-                  >
-                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </motion.svg>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
                 </motion.div>
 
-                {/* Matched user photo */}
                 <motion.div
-                  initial={{ x: 60, opacity: 0, scale: 0.5 }}
-                  animate={{ x: 0, opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, delay: 0.4 }}
+                  initial={{ x: 40, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden ring-2 ring-cyan-500/80 shadow-xl shadow-cyan-500/20 bg-slate-900"
                 >
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-purple-500 ring-offset-2 ring-offset-base-200 shadow-xl shadow-purple-500/20">
-                    <img
-                      src={matchedUser.photoUrl}
-                      alt={`${matchedUser.firstName}'s photo`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <img
+                    src={matchedUser.photoUrl}
+                    alt={matchedUser.firstName}
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
               </div>
 
-              {/* Message */}
-              <motion.p
-                className="text-base-content/70 mb-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-              >
-                You and{" "}
-                <span className="font-bold text-base-content">
-                  {matchedUser.firstName}
-                </span>{" "}
-                are interested in each other!
-              </motion.p>
-
-              {/* Shared Skills - conversation starter */}
+              {/* Shared Tech Stack */}
               {sharedSkills.length > 0 && (
-                <motion.div
-                  className="mb-5"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.85 }}
-                >
-                  <p className="text-xs text-base-content/50 mb-2">
-                    You both know:
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-1.5">
-                    {sharedSkills.slice(0, 5).map((skill) => (
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 mb-6 text-left">
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold mb-2">
+                    Shared Tech Stack
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {sharedSkills.slice(0, 6).map((skill) => (
                       <span
                         key={skill}
-                        className="badge badge-secondary badge-sm"
+                        className="px-2 py-0.5 rounded-lg text-[11px] font-mono font-medium bg-violet-500/20 text-violet-300 border border-violet-500/30"
                       >
                         {skill}
                       </span>
                     ))}
-                    {sharedSkills.length > 5 && (
-                      <span className="badge badge-ghost badge-sm">
-                        +{sharedSkills.length - 5} more
+                    {sharedSkills.length > 6 && (
+                      <span className="px-1.5 py-0.5 rounded-lg text-[10px] font-mono text-slate-400 bg-white/5">
+                        +{sharedSkills.length - 6} more
                       </span>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {/* Action Buttons */}
-              <motion.div
-                className="flex flex-col gap-3"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-              >
+              <div className="space-y-2.5">
                 <Link
                   to={`/chat/${matchedUser._id}`}
-                  className="btn btn-primary btn-lg w-full shadow-lg shadow-primary/30"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-violet-600/30 transition-all flex items-center justify-center gap-2"
                   onClick={onClose}
                 >
-                  💬 Send a Message
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.068-.535.176-1.144.305-1.745A7.95 7.95 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                  </svg>
+                  <span>Start Live Chat</span>
                 </Link>
+
                 <button
                   onClick={onClose}
-                  className="btn btn-ghost btn-sm w-full opacity-70 hover:opacity-100"
+                  className="w-full py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
                 >
-                  Keep Swiping
+                  Keep Exploring Developers
                 </button>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
