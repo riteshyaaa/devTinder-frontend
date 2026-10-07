@@ -137,62 +137,73 @@ const Connections = () => {
       <EmptyState
         icon="🤝"
         title="No connections yet"
-        description="Start swiping to connect with other developers!"
-        action={{ label: "Go to Feed", onClick: () => (window.location.href = "/") }}
+        description="Start swiping to connect with other developers and build projects together!"
+        action={{ label: "Discover Developers", onClick: () => (window.location.href = "/") }}
       />
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold mb-4 text-center">Connections</h2>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-mono font-semibold mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            {onlineUsers.size} Online Now
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Developer Network
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400">
+            {connections.length} mutual developer connection{connections.length !== 1 ? "s" : ""}
+          </p>
+        </div>
 
-      {/* Search & Sort Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="form-control flex-1">
-          <div className="relative">
+        {/* Search & Sort Controls */}
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:items-center">
+          <div className="relative flex-1 sm:w-64">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 opacity-50"
+              className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
               fill="none"
-              viewBox="0 0 24 24"
               stroke="currentColor"
-              aria-hidden="true"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
-              placeholder="Search by name or skill..."
-              className="input input-bordered input-sm w-full pl-9"
+              placeholder="Search by name, skill, tech..."
+              className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
               aria-label="Search connections"
             />
           </div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 rounded-xl bg-brand-surface border border-white/10 text-xs text-white focus:outline-none focus:border-violet-500"
+            aria-label="Sort connections"
+          >
+            <option value="name" className="bg-brand-dark">Sort: A-Z</option>
+            <option value="recent" className="bg-brand-dark">Sort: Online First</option>
+          </select>
         </div>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="select select-bordered select-sm"
-          aria-label="Sort connections"
-        >
-          <option value="name">Sort: A-Z</option>
-          <option value="recent">Sort: Online First</option>
-        </select>
       </div>
 
       {/* Results count */}
       {debouncedQuery && (
-        <p className="text-xs opacity-60 mb-3">
-          {filteredConnections.length} result{filteredConnections.length !== 1 ? "s" : ""} found
+        <p className="text-xs font-mono text-cyan-400 mb-3">
+          {filteredConnections.length} result{filteredConnections.length !== 1 ? "s" : ""} found for "{debouncedQuery}"
         </p>
       )}
 
       {/* Connection List with Infinite Scroll */}
       {filteredConnections.length === 0 ? (
-        <div className="text-center py-10 opacity-60">
-          <p>No connections match "{debouncedQuery}"</p>
+        <div className="text-center py-12 rounded-2xl bg-brand-surface/40 border border-white/5 text-slate-400">
+          <p className="text-sm">No connections match &ldquo;{debouncedQuery}&rdquo;</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -202,54 +213,73 @@ const Connections = () => {
 
             return (
               <div
-                className="bg-base-200 flex items-center rounded-lg p-3 gap-3 hover:bg-base-300 transition-colors"
+                className="group relative rounded-2xl bg-brand-surface/70 hover:bg-brand-surface/95 border border-white/5 hover:border-violet-500/30 p-4 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-md shadow-lg shadow-black/20"
                 key={_id}
               >
-                {/* Avatar with online indicator + initials fallback */}
-                <Avatar
-                  firstName={firstName}
-                  lastName={lastName}
-                  photoUrl={photoUrl}
-                  size="md"
-                  isOnline={isOnline}
-                />
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm truncate">
-                      {firstName} {lastName}
-                    </h3>
-                    {isOnline && (
-                      <span className="text-xs text-success">online</span>
-                    )}
+                <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+                  {/* Avatar with online indicator + initials fallback */}
+                  <div className="relative shrink-0">
+                    <Avatar
+                      firstName={firstName}
+                      lastName={lastName}
+                      photoUrl={photoUrl}
+                      size="md"
+                      isOnline={isOnline}
+                    />
                   </div>
-                  {age && gender && (
-                    <p className="text-xs opacity-60">{age}, {gender}</p>
-                  )}
-                  {about && (
-                    <p className="text-xs opacity-50 truncate">{about}</p>
-                  )}
-                  {skills?.length > 0 && (
-                    <div className="flex gap-1 mt-1 flex-wrap">
-                      {skills.slice(0, 3).map((skill) => (
-                        <span key={skill} className="badge badge-xs badge-primary badge-outline">
-                          {skill}
+
+                  {/* Info */}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-sm text-white truncate group-hover:text-violet-300 transition-colors">
+                        {firstName} {lastName}
+                      </h3>
+                      {isOnline && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          online
                         </span>
-                      ))}
-                      {skills.length > 3 && (
-                        <span className="badge badge-xs badge-ghost">+{skills.length - 3}</span>
                       )}
                     </div>
-                  )}
+                    {age && gender && (
+                      <p className="text-xs text-slate-400 mt-0.5">{age} • {gender}</p>
+                    )}
+                    {about && (
+                      <p className="text-xs text-slate-400 line-clamp-1 mt-1">{about}</p>
+                    )}
+                    {skills?.length > 0 && (
+                      <div className="flex gap-1.5 mt-2 flex-wrap">
+                        {skills.slice(0, 4).map((skill) => (
+                          <span
+                            key={skill}
+                            className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-white/5 text-slate-300 border border-white/10"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {skills.length > 4 && (
+                          <span className="px-1.5 py-0.5 rounded-md text-[10px] font-mono text-slate-400 bg-white/5">
+                            +{skills.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Chat Button */}
-                <Link to={`/chat/${_id}`} className="flex-shrink-0">
-                  <button className="btn btn-primary btn-sm" aria-label={`Chat with ${firstName}`}>
-                    💬 Chat
-                  </button>
-                </Link>
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                  <Link to={`/chat/${_id}`}>
+                    <button
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-md shadow-violet-600/30 transition-all flex items-center gap-2"
+                      aria-label={`Chat with ${firstName}`}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.068-.535.176-1.144.305-1.745A7.95 7.95 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                      </svg>
+                      <span>Message</span>
+                    </button>
+                  </Link>
+                </div>
               </div>
             );
           })}
@@ -263,8 +293,8 @@ const Connections = () => {
 
           {/* End of list indicator */}
           {!hasMore && filteredConnections.length > 10 && (
-            <p className="text-center text-xs opacity-40 py-4">
-              — You've reached the end —
+            <p className="text-center text-xs font-mono text-slate-500 py-6">
+              — End of developer directory —
             </p>
           )}
         </div>
